@@ -48,21 +48,42 @@ type Info struct {
 // ServerVariable is an object representing a Server Variable for server URL template substitution.
 type ServerVariable struct {
 	// An enumeration of string values to be used if the substitution options are from a limited set. The array MUST NOT be empty.
-	Enum	[]string	`yaml:"enum,omitempty" json:"enum,omitempty"`
+	Enum []string `yaml:"enum,omitempty" json:"enum,omitempty"`
 	// REQUIRED. The default value to use for substitution, which SHALL be sent if an alternate value is not supplied. Note this behavior is different than the Schema Object’s treatment of default values, because in those cases parameter values are optional. If the enum is defined, the value MUST exist in the enum’s values.
-	Default	string	`yaml:"default,omitempty" json:"default,omitempty"`
+	Default string `yaml:"default,omitempty" json:"default,omitempty"`
 	// An optional description for the server variable. CommonMark syntax MAY be used for rich text representation.
-	Description	string	`yaml:"description,omitempty" json:"description,omitempty"`
+	Description string `yaml:"description,omitempty" json:"description,omitempty"`
 }
 
 // Server is an object representing a Server.
 type Server struct {
 	// REQUIRED. A URL to the target host. This URL supports Server Variables and MAY be relative, to indicate that the host location is relative to the location where the OpenAPI document is being served. Variable substitutions will be made when a variable is named in {brackets}.
-	URL string	`yaml:"url,omitempty" json:"url,omitempty"`
+	URL string `yaml:"url,omitempty" json:"url,omitempty"`
 	// An optional string describing the host designated by the URL. CommonMark syntax MAY be used for rich text representation.
-	Description	string	`yaml:"description,omitempty" json:"description,omitempty"`
+	Description string `yaml:"description,omitempty" json:"description,omitempty"`
 	// A map between a variable name and its value. The value is used for substitution in the server’s URL template.
-	Variables	map[string]ServerVariable	`yaml:"variables,omitempty" json:"variables,omitempty"`
+	Variables map[string]ServerVariable `yaml:"variables,omitempty" json:"variables,omitempty"`
+}
+
+// SecurityRequirement lists the required security schemes to execute this operation. The name used for each property MUST correspond to a security scheme declared in the Security Schemes under the Components Object.
+type SecurityRequirement struct {}
+
+// ExternalDocumentation allows referencing an external resource for extended documentation.
+type ExternalDocumentation struct {
+	// A description of the target documentation. CommonMark syntax MAY be used for rich text representation.
+	Description	string	`yaml:"description,omitempty" json:"description,omitempty"`
+	// REQUIRED. The URL for the target documentation. This MUST be in the form of a URL.
+	URL	string	`yaml:"url,omitempty" json:"url,omitempty"`
+}
+
+// Tag adds metadata to a single tag that is used by the Operation Object. It is not mandatory to have a Tag Object per tag defined in the Operation Object instances.
+type Tag struct {
+	// REQUIRED. The name of the tag.
+	Name	string	`yaml:"name,omitempty" json:"name,omitempty"`
+	// A description for the tag. CommonMark syntax MAY be used for rich text representation.
+	Description	string	`yaml:"description,omitempty" json:"description,omitempty"`
+	// Additional external documentation for this tag.
+	ExternalDocs	ExternalDocumentation	`yaml:"externalDocs,omitempty" json:"externalDocs,omitempty"`
 }
 
 // OpenAPI is the root object of the OpenAPI document.
@@ -72,9 +93,16 @@ type OpenAPI struct {
 	// REQUIRED. Provides metadata about the API. The metadata MAY be used by tooling as required.
 	Info Info `yaml:"info,omitempty" json:"info,omitempty"`
 	// The default value for the $schema keyword within Schema Objects contained within this OAS document. This MUST be in the form of a URI.
-	JSONSchemaDialect	string	`yaml:"jsonSchemaDialect,omitempty" json:"jsonSchemaDialect,omitempty"`
+	JSONSchemaDialect string `yaml:"jsonSchemaDialect,omitempty" json:"jsonSchemaDialect,omitempty"`
 	// An array of Server Objects, which provide connectivity information to a target server. If the servers property is not provided, or is an empty array, the default value would be a Server Object with a url value of /.
-	Servers	[]Server	`yaml:"servers,omitempty" json:"servers,omitempty"`
+	Servers []Server `yaml:"servers,omitempty" json:"servers,omitempty"`
+
+	// A declaration of which security mechanisms can be used across the API. The list of values includes alternative security requirement objects that can be used. Only one of the security requirement objects need to be satisfied to authorize a request. Individual operations can override this definition. To make security optional, an empty security requirement ({}) can be included in the array.
+	Security	[]SecurityRequirement	`yaml:"security,omitempty" json:"security,omitempty"`
+	// A list of tags used by the document with additional metadata. The order of the tags can be used to reflect on their order by the parsing tools. Not all tags that are used by the Operation Object must be declared. The tags that are not declared MAY be organized randomly or based on the tools’ logic. Each tag name in the list MUST be unique.
+	Tags	[]Tag	`yaml:"tags,omitempty" json:"tags,omitempty"`
+	// Additional external documentation.
+	ExternalDocs	ExternalDocumentation	`yaml:"externalDocs,omitempty" json:"externalDocs,omitempty"`
 }
 
 func main() {
