@@ -45,12 +45,36 @@ type Info struct {
 	Version string `yaml:"version,omitempty" json:"version,omitempty"`
 }
 
+// ServerVariable is an object representing a Server Variable for server URL template substitution.
+type ServerVariable struct {
+	// An enumeration of string values to be used if the substitution options are from a limited set. The array MUST NOT be empty.
+	Enum	[]string	`yaml:"enum,omitempty" json:"enum,omitempty"`
+	// REQUIRED. The default value to use for substitution, which SHALL be sent if an alternate value is not supplied. Note this behavior is different than the Schema Object’s treatment of default values, because in those cases parameter values are optional. If the enum is defined, the value MUST exist in the enum’s values.
+	Default	string	`yaml:"default,omitempty" json:"default,omitempty"`
+	// An optional description for the server variable. CommonMark syntax MAY be used for rich text representation.
+	Description	string	`yaml:"description,omitempty" json:"description,omitempty"`
+}
+
+// Server is an object representing a Server.
+type Server struct {
+	// REQUIRED. A URL to the target host. This URL supports Server Variables and MAY be relative, to indicate that the host location is relative to the location where the OpenAPI document is being served. Variable substitutions will be made when a variable is named in {brackets}.
+	URL string	`yaml:"url,omitempty" json:"url,omitempty"`
+	// An optional string describing the host designated by the URL. CommonMark syntax MAY be used for rich text representation.
+	Description	string	`yaml:"description,omitempty" json:"description,omitempty"`
+	// A map between a variable name and its value. The value is used for substitution in the server’s URL template.
+	Variables	map[string]ServerVariable	`yaml:"variables,omitempty" json:"variables,omitempty"`
+}
+
 // OpenAPI is the root object of the OpenAPI document.
 type OpenAPI struct {
 	// REQUIRED. This string MUST be the version number of the OpenAPI Specification that the OpenAPI document uses. The openapi field SHOULD be used by tooling to interpret the OpenAPI document. This is not related to the API info.version string.
 	OpenAPI string `yaml:"openapi,omitempty" json:"openapi,omitempty"`
 	// REQUIRED. Provides metadata about the API. The metadata MAY be used by tooling as required.
 	Info Info `yaml:"info,omitempty" json:"info,omitempty"`
+	// The default value for the $schema keyword within Schema Objects contained within this OAS document. This MUST be in the form of a URI.
+	JSONSchemaDialect	string	`yaml:"jsonSchemaDialect,omitempty" json:"jsonSchemaDialect,omitempty"`
+	// An array of Server Objects, which provide connectivity information to a target server. If the servers property is not provided, or is an empty array, the default value would be a Server Object with a url value of /.
+	Servers	[]Server	`yaml:"servers,omitempty" json:"servers,omitempty"`
 }
 
 func main() {
